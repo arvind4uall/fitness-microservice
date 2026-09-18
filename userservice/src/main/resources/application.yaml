@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: userservice
+  datasource:
+    url: jdbc:mysql://localhost:3306/fitness_db
+    username: root
+    password: arvind9600
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true

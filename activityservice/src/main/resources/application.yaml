@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: activityservice
+  mongodb:
+    uri: mongodb://root:rootpass@localhost:27017/?authSource=admin
+    database: fitnessactivity
+server:
+  port: 8082
+
