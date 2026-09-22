@@ -1,19 +1,24 @@
 package com.fsdarvind.fitness.activityservice.service;
 
+import com.fsdarvind.fitness.activityservice.config.RabbitMqConfig;
 import com.fsdarvind.fitness.activityservice.dto.ActivityRequest;
 import com.fsdarvind.fitness.activityservice.dto.ActivityResponse;
 import com.fsdarvind.fitness.activityservice.model.Activity;
 import com.fsdarvind.fitness.activityservice.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidationService userValidationService;
+    private final RabbitTemplate template;
 
     public ActivityResponse trackActivity(ActivityRequest request) {
         boolean isValidUser = userValidationService.validateUser(request.getUserId());
@@ -29,6 +34,16 @@ public class ActivityService {
                 .build();
 
         Activity savedActivity = activityRepository.save(activity);
+        try{
+            log.info("Sending message to queue: "+savedActivity);
+            template.convertAndSend(
+                    RabbitMqConfig.EXCHANGE,
+                    RabbitMqConfig.ROUTING_KEY,
+                    savedActivity
+            );
+        }catch(Exception e){
+            log.error("Error occured while publishing messge to queue:  "+e.getMessage());
+        }
         return mapToResponse(savedActivity);
     }
 
