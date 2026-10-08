@@ -1,0 +1,5 @@
+kubectl port-forward svc/keycloak 8087:8080 -n mongodb
+
+kubectl port-forward svc/mongodb-service 27017:27017 -n mongodb
+
+kubectl port-forward svc/rabbitmq 5672:5672 15672:15672 -n mongodb
