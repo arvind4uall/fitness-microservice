@@ -15,6 +15,13 @@ spring:
               uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/users/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 2
+                    redis-rate-limiter.requestedTokens: 60
             - id: activity-service
               uri: lb://ACTIVITY-SERVICE
               predicates:
@@ -23,6 +30,10 @@ spring:
               uri: lb://AI-SERVICE
               predicates:
                 - Path=/api/recommendations/**
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
 server:
   port: 8080
 
